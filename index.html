@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mirasol VIP Portal</title>
+    <style>
+        :root { --primary: #6c5ce7; --accent: #a29bfe; --bg: #f0f2f5; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); display: flex; height: 100vh; margin: 0; color: #2d3436; }
+        
+        .sidebar { width: 280px; background: #2d3436; color: white; padding: 30px; display: flex; flex-direction: column; }
+        .sidebar h1 { font-size: 1.5rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 5px; }
+        .sidebar p { font-size: 0.8rem; opacity: 0.6; margin-bottom: 30px; }
+        
+        .main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .card { background: white; padding: 40px; border-radius: 20px; width: 100%; max-width: 500px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 5px solid var(--primary); }
+        
+        h2 { margin-top: 0; color: var(--primary); font-size: 1.6rem; }
+        .instruction { font-size: 0.9rem; color: #636e72; margin-bottom: 25px; }
+        
+        .section-label { font-size: 0.75rem; font-weight: bold; color: var(--primary); text-transform: uppercase; margin: 20px 0 10px 0; display: block; }
+        
+        input { width: 100%; padding: 12px 15px; margin-bottom: 15px; border: 1px solid #dfe6e9; border-radius: 10px; font-size: 0.95rem; transition: border 0.3s; box-sizing: border-box;}
+        input:focus { outline: none; border-color: var(--primary); background: #f9f9ff; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        button { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.3s; margin-top: 10px; }
+        button:hover { background: #5849c4; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3); }
+        
+        .admin-btn { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; margin-top: auto; padding: 10px; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h1>MIRASOL</h1>
+    <p>Premium Experience Engine</p>
+    <button class="admin-btn" onclick="location.href='/history'">Access Admin Dashboard</button>
+</div>
+
+<div class="main">
+    <div class="card">
+        <h2>VIP Eligibility Check</h2>
+        <p class="instruction">Enter customer metrics to determine VIP status via Machine Learning.</p>
+        
+        <span class="section-label">Identity Details</span>
+        <input type="text" id="name" placeholder="Customer Name">
+        <input type="email" id="email" placeholder="Customer Email">
+        
+        <div class="grid">
+            <input type="number" id="age" placeholder="Age">
+            <input type="number" id="income" placeholder="Annual Income (₱)">
+        </div>
+
+        <span class="section-label">Activity Metrics</span>
+        <div class="grid">
+            <input type="number" id="kids" placeholder="Total Children">
+            <input type="number" id="teens" placeholder="Total Teens">
+        </div>
+        
+        <input type="number" id="recency" placeholder="Days since last purchase">
+        <input type="number" id="spending" placeholder="Total Lifetime Spending (₱)">
+
+        <button onclick="analyze()">Run Eligibility Analysis</button>
+    </div>
+</div>
+
+<script>
+    function analyze() {
+        const btn = document.querySelector('button');
+        const originalText = btn.innerText;
+        
+        // Collect data
+        const payload = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            age: document.getElementById('age').value,
+            income: document.getElementById('income').value,
+            kids: document.getElementById('kids').value,
+            teens: document.getElementById('teens').value,
+            recency: document.getElementById('recency').value,
+            spending: document.getElementById('spending').value
+        };
+
+        if(!payload.name || !payload.income) {
+            alert("Please enter the required fields.");
+            return;
+        }
+
+        // Change button look to show it's "thinking"
+        btn.innerText = "Analyzing Metrics...";
+        btn.style.opacity = "0.7";
+        btn.disabled = true;
+
+        fetch('/submit', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        }).then(() => {
+            // No more annoying popup! Just go straight to the results.
+            window.location.href = '/history';
+        }).catch(err => {
+            btn.innerText = originalText;
+            btn.disabled = false;
+            alert("Connection Error");
+        });
+    }
+</script>
+</body>
+</html>

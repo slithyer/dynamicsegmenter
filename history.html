@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mirasol Admin - Segmentation History</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 40px; margin: 0; }
+        .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); max-width: 1000px; margin: auto; }
+        h2 { color: #6c5ce7; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #6c5ce7; color: white; padding: 15px; text-align: left; }
+        td { padding: 15px; border-bottom: 1px solid #f0f0f0; color: #2d3436; }
+        .btn-back { display: inline-block; padding: 10px 20px; background: #2d3436; color: white; text-decoration: none; border-radius: 8px; margin-bottom: 20px; font-weight: bold; }
+        
+        /* Updated Status Badges for Eligibility */
+        .badge { padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 0.85em; }
+        
+        .qualified { background: #d1fae5; color: #065f46; border: 1px solid #10b981; } /* Green for Success */
+        .unfit { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }     /* Red for Failed ML */
+        .rejected { background: #f3f4f6; color: #374151; border: 1px solid #9ca3af; }  /* Gray for Rule-based reject */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="btn-back">← Back to Input</a>
+        <h2>Mirasol Analytics: Customer History</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Email</th>
+                    <th>Income (₱)</th>
+                    <th>VIP Eligibility Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in history %}
+                <tr>
+                    <td>{{ entry.name }}</td>
+                    <td>{{ entry.email }}</td>
+                    <td>{{ "{:,.2f}".format(entry.income|float) }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if 'QUALIFIED' in entry.personality %}qualified
+                            {% elif 'REJECTED' in entry.personality %}rejected
+                            {% else %}unfit{% endif %}">
+                            {{ entry.personality }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
